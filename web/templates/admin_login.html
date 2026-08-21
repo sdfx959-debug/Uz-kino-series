@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Kirish</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-body">
+<div class="login-card">
+  <div class="login-icon">🔐</div>
+  <h1>Admin Panel</h1>
+  <p class="login-sub">Tizimga kirish uchun login va parolni kiriting</p>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash-error">{{ messages[0] }}</div>
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="{{ url_for('admin_login') }}">
+    <input type="text" name="username" placeholder="👤 Login" required>
+    <input type="password" name="password" placeholder="🔑 Parol" required>
+    <button type="submit" class="btn-gradient">Kirish →</button>
+  </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="admin-body">
+
+<div class="admin-header">
+  <h1>🎛 Admin Panel</h1>
+  <a href="{{ url_for('admin_logout') }}" class="btn-logout">🚪 Chiqish</a>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card stat-blue">
+    <div class="stat-num">{{ stats.total }}</div>
+    <div class="stat-label">🎬 Jami kinolar</div>
+  </div>
+  <div class="stat-card stat-pink">
+    <div class="stat-num">{{ stats.views }}</div>
+    <div class="stat-label">👁 Jami ko'rishlar</div>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="flash-box">{{ messages[0] }}</div>
+  {% endif %}
+{% endwith %}
+
+<div class="admin-section">
+  <h2>➕ Yangi kino qo'shish</h2>
+  <form method="POST" action="{{ url_for('admin_add') }}" class="movie-form">
+    <div class="form-grid">
+      <input type="text" name="code" placeholder="🔑 Kino kodi (masalan: 1001)" required>
+      <input type="text" name="title" placeholder="🎬 Kino nomi" required>
+      <input type="text" name="genre" placeholder="🎭 Janr (Drama, Komediya...)">
+      <input type="number" name="year" placeholder="📅 Yil (masalan: 2024)">
+      <input type="url" name="poster_url" placeholder="🖼 Poster rasm havolasi (URL)">
+      <input type="text" name="video_file_id" placeholder="📹 Video file_id (botga videoni yuboring)" required>
+    </div>
+    <textarea name="description" placeholder="📝 Kino haqida qisqacha ma'lumot..." rows="3"></textarea>
+    <button type="submit" class="btn-gradient btn-add">➕ Qo'shish</button>
+  </form>
+</div>
+
+<div class="admin-section">
+  <h2>🎞 Barcha kinolar ({{ movies|length }})</h2>
+  <div class="table-wrap">
+    <table class="movie-table">
+      <thead>
+        <tr>
+          <th>Poster</th>
+          <th>Nomi</th>
+          <th>Kod</th>
+          <th>Janr</th>
+          <th>Yil</th>
+          <th>👁</th>
+          <th>Amallar</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in movies %}
+        <tr>
+          <td>
+            {% if m.poster_url %}
+              <img src="{{ m.poster_url }}" class="thumb" alt="">
+            {% else %}
+              <div class="thumb thumb-empty">🎬</div>
+            {% endif %}
+          </td>
+          <td class="title-cell">{{ m.title }}</td>
+          <td><span class="code-badge">{{ m.code }}</span></td>
+          <td>{{ m.genre or '—' }}</td>
+          <td>{{ m.year or '—' }}</td>
+          <td>{{ m.views }}</td>
+          <td class="actions-cell">
+            <button class="btn-edit" onclick="openEdit({{ m|tojson|forceescape }})">✏️</button>
+            <form method="POST" action="{{ url_for('admin_delete', movie_id=m.id) }}" onsubmit="return confirm('Rostdan ham o\'chirmoqchimisiz?');" style="display:inline">
+              <button type="submit" class="btn-delete">🗑</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="empty-row">Hozircha kinolar yo'q</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Edit modal -->
+<div id="editOverlay" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeEdit()">✕</button>
+    <h2>✏️ Kinoni tahrirlash</h2>
+    <form id="editForm" method="POST" class="movie-form">
+      <div class="form-grid">
+        <input type="text" name="code" id="edit_code" placeholder="Kod" required>
+        <input type="text" name="title" id="edit_title" placeholder="Nomi" required>
+        <input type="text" name="genre" id="edit_genre" placeholder="Janr">
+        <input type="number" name="year" id="edit_year" placeholder="Yil">
+        <input type="url" name="poster_url" id="edit_poster" placeholder="Poster URL">
+        <input type="text" name="video_file_id" id="edit_video" placeholder="Video file_id" required>
+      </div>
+      <textarea name="description" id="edit_desc" rows="3"></textarea>
+      <button type="submit" class="btn-gradient btn-add">💾 Saqlash</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function openEdit(movie) {
+  document.getElementById('editForm').action = '/admin/edit/' + movie.id;
+  document.getElementById('edit_code').value = movie.code;
+  document.getElementById('edit_title').value = movie.title;
+  document.getElementById('edit_genre').value = movie.genre || '';
+  document.getElementById('edit_year').value = movie.year || '';
+  document.getElementById('edit_poster').value = movie.poster_url || '';
+  document.getElementById('edit_video').value = movie.video_file_id;
+  document.getElementById('edit_desc').value = movie.description || '';
+  document.getElementById('editOverlay').classList.add('active');
+}
+function closeEdit() {
+  document.getElementById('editOverlay').classList.remove('active');
+}
+</script>
+</body>
+</html>
