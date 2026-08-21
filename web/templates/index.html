@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Kino Katalog</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="topbar">
+  <h1>🎬 Kino Katalog</h1>
+</div>
+
+<div class="search-wrap">
+  <input type="text" id="searchInput" placeholder="🔍 Kino nomi yoki kodini yozing..." autocomplete="off">
+</div>
+
+<div id="loader" class="loader">⏳ Yuklanmoqda...</div>
+<div id="movieGrid" class="movie-grid"></div>
+<div id="emptyState" class="empty-state" style="display:none">😕 Kino topilmadi</div>
+
+<div id="modalOverlay" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <img id="modalPoster" class="modal-poster" src="" alt="">
+    <h2 id="modalTitle"></h2>
+    <div class="modal-tags">
+      <span id="modalGenre" class="tag"></span>
+      <span id="modalYear" class="tag"></span>
+      <span id="modalViews" class="tag"></span>
+    </div>
+    <p id="modalDesc" class="modal-desc"></p>
+    <a id="modalWatchBtn" class="btn-watch" href="#" target="_blank">▶️ Tomosha qilish</a>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}" data-bot-username="{{ bot_username }}"></script>
+</body>
+</html>
